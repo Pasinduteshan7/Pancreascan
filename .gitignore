@@ -1,0 +1,19 @@
+# Data - never commit large datasets
+data/processed/
+data/*.nii.gz
+*.npy
+
+# Python
+__pycache__/
+*.pyc
+.ipynb_checkpoints/
+
+# Environment
+.env
+
+# OS junk
+.DS_Store
+Thumbs.db
+
+# Outputs (generated images/checkpoints - optional, up to you)
+outputs/*.png
