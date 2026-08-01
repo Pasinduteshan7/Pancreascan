@@ -17,3 +17,4 @@ Thumbs.db
 
 # Outputs (generated images/checkpoints - optional, up to you)
 outputs/*.png
+*.pth
