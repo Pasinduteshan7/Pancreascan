@@ -1,0 +1,353 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="PancreaScan — AI-powered two-stage pancreatic tumor detection from CT imaging. Stage 1 localizes the pancreas; Stage 2 detects tumors within the crop.">
+    <title>PancreaScan — AI Pancreatic Tumor Detection</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <!-- ============================================================ -->
+    <!-- HERO -->
+    <!-- ============================================================ -->
+    <header class="hero" id="hero">
+        <div class="hero__bg-grid"></div>
+        <div class="hero__content">
+            <div class="hero__badge">Two-Stage AI Pipeline · Research Demonstration</div>
+            <h1 class="hero__title">
+                <span class="hero__title-icon">🔬</span>
+                Pancrea<span class="hero__accent">Scan</span>
+            </h1>
+            <p class="hero__subtitle">
+                AI-Powered Pancreatic Tumor Detection from CT Imaging
+            </p>
+            <p class="hero__description">
+                A coarse-to-fine two-stage deep learning pipeline: Stage 1 localizes the pancreas,
+                Stage 2 zooms in to detect cancer within it — trained on the Medical Segmentation Decathlon dataset.
+            </p>
+            <div class="hero__stats">
+                <div class="hero__stat">
+                    <span class="hero__stat-value">2-Stage</span>
+                    <span class="hero__stat-label">UNet Pipeline</span>
+                </div>
+                <div class="hero__stat-divider"></div>
+                <div class="hero__stat">
+                    <span class="hero__stat-value">3</span>
+                    <span class="hero__stat-label">Class Segmentation</span>
+                </div>
+                <div class="hero__stat-divider"></div>
+                <div class="hero__stat">
+                    <span class="hero__stat-value">281</span>
+                    <span class="hero__stat-label">CT Scans Trained</span>
+                </div>
+                <div class="hero__stat-divider"></div>
+                <div class="hero__stat">
+                    <span class="hero__stat-value">81%</span>
+                    <span class="hero__stat-label">Peak Confidence</span>
+                </div>
+            </div>
+            <a href="#analyze" class="hero__cta">
+                <span>Start Analysis</span>
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M7 17l9.2-9.2M17 17V7.8H7.8"/></svg>
+            </a>
+        </div>
+    </header>
+
+    <!-- ============================================================ -->
+    <!-- ANALYZE SECTION -->
+    <!-- ============================================================ -->
+    <main>
+        <section class="section" id="analyze">
+            <div class="container">
+                <div class="section__header">
+                    <h2 class="section__title">Analyze a CT Slice</h2>
+                    <p class="section__subtitle">Upload your own .npy file or choose from sample slices below</p>
+                </div>
+
+                <!-- Upload Zone -->
+                <div class="upload-zone" id="uploadZone">
+                    <div class="upload-zone__content">
+                        <div class="upload-zone__icon">
+                            <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+                                <polyline points="17 8 12 3 7 8"/>
+                                <line x1="12" y1="3" x2="12" y2="15"/>
+                            </svg>
+                        </div>
+                        <p class="upload-zone__text">Drag &amp; drop a <strong>.npy</strong> CT slice here</p>
+                        <p class="upload-zone__hint">or click to browse files</p>
+                        <input type="file" id="fileInput" accept=".npy" hidden>
+                    </div>
+                    <div class="upload-zone__border"></div>
+                </div>
+
+                <!-- Divider -->
+                <div class="divider">
+                    <span class="divider__text">or explore samples</span>
+                </div>
+
+                <!-- Sample Gallery -->
+                <div class="samples" id="samplesSection">
+                    <div class="samples__header">
+                        <h3 class="samples__title">Sample CT Slices</h3>
+                        <p class="samples__subtitle">Click any sample to run the full two-stage pipeline with ground truth comparison</p>
+                    </div>
+                    <div class="samples__grid" id="samplesGrid">
+                        <div class="samples__loading">
+                            <div class="spinner"></div>
+                            <p>Loading samples...</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ============================================================ -->
+        <!-- RESULTS SECTION -->
+        <!-- ============================================================ -->
+        <section class="section results-section" id="resultsSection" style="display: none;">
+            <div class="container">
+                <div class="section__header">
+                    <h2 class="section__title">Pipeline Results</h2>
+                    <p class="section__subtitle" id="resultsSubtitle">Model prediction for the selected slice</p>
+                </div>
+
+                <!-- Loading State -->
+                <div class="results__loading" id="resultsLoading" style="display: none;">
+                    <div class="spinner spinner--large"></div>
+                    <p class="results__loading-text">Running two-stage pipeline inference...</p>
+                </div>
+
+                <!-- Results Content -->
+                <div class="results" id="resultsContent" style="display: none;">
+                    <!-- Detection Alert -->
+                    <div class="alert" id="detectionAlert"></div>
+
+                    <!-- Stats Cards -->
+                    <div class="stats-row" id="statsRow">
+                        <div class="stat-card stat-card--background">
+                            <div class="stat-card__icon">⬛</div>
+                            <div class="stat-card__info">
+                                <span class="stat-card__value" id="statBackground">—</span>
+                                <span class="stat-card__label">Background</span>
+                            </div>
+                        </div>
+                        <div class="stat-card stat-card--pancreas">
+                            <div class="stat-card__icon">🫁</div>
+                            <div class="stat-card__info">
+                                <span class="stat-card__value" id="statPancreas">—</span>
+                                <span class="stat-card__label">Pancreas</span>
+                            </div>
+                        </div>
+                        <div class="stat-card stat-card--tumor">
+                            <div class="stat-card__icon">⚠️</div>
+                            <div class="stat-card__info">
+                                <span class="stat-card__value" id="statTumor">—</span>
+                                <span class="stat-card__label">Tumor</span>
+                            </div>
+                        </div>
+                        <div class="stat-card stat-card--confidence">
+                            <div class="stat-card__icon">📊</div>
+                            <div class="stat-card__info">
+                                <span class="stat-card__value" id="statConfidence">—</span>
+                                <span class="stat-card__label">Max Confidence</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Pipeline Stage Labels -->
+                    <div class="pipeline-flow">
+                        <div class="pipeline-step">
+                            <span class="pipeline-step__num">1</span>
+                            <span class="pipeline-step__label">Input CT</span>
+                        </div>
+                        <div class="pipeline-arrow">→</div>
+                        <div class="pipeline-step">
+                            <span class="pipeline-step__num">2</span>
+                            <span class="pipeline-step__label">Stage 1: Localize</span>
+                        </div>
+                        <div class="pipeline-arrow">→</div>
+                        <div class="pipeline-step">
+                            <span class="pipeline-step__num">3</span>
+                            <span class="pipeline-step__label">Stage 2: Crop</span>
+                        </div>
+                        <div class="pipeline-arrow">→</div>
+                        <div class="pipeline-step pipeline-step--highlight">
+                            <span class="pipeline-step__num">4</span>
+                            <span class="pipeline-step__label">Final Result</span>
+                        </div>
+                    </div>
+
+                    <!-- Image Grid — 5 panels -->
+                    <div class="image-grid image-grid--pipeline" id="imageGrid">
+                        <div class="image-card">
+                            <div class="image-card__header">
+                                <span class="image-card__dot"></span>
+                                CT Scan Slice
+                            </div>
+                            <div class="image-card__body">
+                                <img id="ctImage" alt="Original CT scan slice">
+                            </div>
+                            <div class="image-card__footer">Raw input</div>
+                        </div>
+
+                        <div class="image-card image-card--stage1">
+                            <div class="image-card__header">
+                                <span class="image-card__dot image-card__dot--stage1"></span>
+                                Stage 1 — Pancreas Location
+                            </div>
+                            <div class="image-card__body">
+                                <img id="stage1Image" alt="Stage 1 pancreas localization mask">
+                            </div>
+                            <div class="image-card__footer">Teal = pancreas region · Orange = crop window</div>
+                        </div>
+
+                        <div class="image-card image-card--crop">
+                            <div class="image-card__header">
+                                <span class="image-card__dot image-card__dot--crop"></span>
+                                Stage 2 — Zoomed Crop
+                            </div>
+                            <div class="image-card__body">
+                                <img id="cropImage" alt="Zoomed pancreas crop for Stage 2">
+                            </div>
+                            <div class="image-card__footer">Tight crop fed into Stage 2</div>
+                        </div>
+
+                        <div class="image-card image-card--prediction">
+                            <div class="image-card__header">
+                                <span class="image-card__dot image-card__dot--prediction"></span>
+                                Final Prediction
+                            </div>
+                            <div class="image-card__body">
+                                <img id="overlayImage" alt="Final combined prediction overlay">
+                            </div>
+                            <div class="image-card__footer">Teal = pancreas · Red = tumor</div>
+                        </div>
+
+                        <div class="image-card image-card--confidence">
+                            <div class="image-card__header">
+                                <span class="image-card__dot image-card__dot--confidence"></span>
+                                Tumor Confidence
+                            </div>
+                            <div class="image-card__body">
+                                <img id="confidenceImage" alt="Tumor probability heatmap">
+                            </div>
+                            <div class="image-card__footer">Bright = high tumor probability</div>
+                        </div>
+
+                        <div class="image-card" id="groundTruthCard" style="display: none;">
+                            <div class="image-card__header">
+                                <span class="image-card__dot image-card__dot--truth"></span>
+                                Ground Truth
+                            </div>
+                            <div class="image-card__body">
+                                <img id="groundTruthImage" alt="Expert ground truth annotation">
+                            </div>
+                            <div class="image-card__footer">Expert radiologist annotation</div>
+                        </div>
+                    </div>
+
+                    <!-- Legend -->
+                    <div class="legend">
+                        <h4 class="legend__title">Color Legend</h4>
+                        <div class="legend__items">
+                            <div class="legend__item">
+                                <span class="legend__swatch legend__swatch--pancreas"></span>
+                                <span>Healthy Pancreas</span>
+                            </div>
+                            <div class="legend__item">
+                                <span class="legend__swatch legend__swatch--tumor"></span>
+                                <span>Tumor Tissue</span>
+                            </div>
+                            <div class="legend__item">
+                                <span class="legend__swatch legend__swatch--stage1"></span>
+                                <span>Stage 1 Region</span>
+                            </div>
+                            <div class="legend__item">
+                                <span class="legend__swatch legend__swatch--bg"></span>
+                                <span>Background</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- New Analysis Button -->
+                    <button class="btn btn--outline" id="newAnalysisBtn">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M23 4v6h-6"/><path d="M1 20v-6h6"/><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/></svg>
+                        <span>New Analysis</span>
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <!-- ============================================================ -->
+        <!-- ABOUT SECTION -->
+        <!-- ============================================================ -->
+        <section class="section section--about" id="about">
+            <div class="container">
+                <div class="section__header">
+                    <h2 class="section__title">How It Works</h2>
+                    <p class="section__subtitle">The two-stage coarse-to-fine AI pipeline behind PancreaScan</p>
+                </div>
+
+                <div class="about-grid">
+                    <div class="about-card">
+                        <div class="about-card__number">01</div>
+                        <h3 class="about-card__title">CT Preprocessing</h3>
+                        <p class="about-card__text">
+                            Raw CT scans in Hounsfield Units are windowed to a soft-tissue range (-160 to 240 HU)
+                            and normalized to 0–1. 3D volumes are sliced into 2D axial slices for efficient processing.
+                        </p>
+                    </div>
+                    <div class="about-card">
+                        <div class="about-card__number">02</div>
+                        <h3 class="about-card__title">Stage 1 — Localization</h3>
+                        <p class="about-card__text">
+                            A UNet model scans the full 256×256 slice and produces a binary mask showing where the
+                            pancreas region is. A tight bounding box is extracted around this region, filtering out
+                            95% of the irrelevant anatomy (liver, spine, intestines).
+                        </p>
+                    </div>
+                    <div class="about-card">
+                        <div class="about-card__number">03</div>
+                        <h3 class="about-card__title">Stage 2 — Tumor Detection</h3>
+                        <p class="about-card__text">
+                            The cropped pancreas region is fed into a second, specialized UNet trained exclusively on
+                            pancreas crops. With 100% of its attention on pancreatic tissue, it classifies each pixel
+                            as background, healthy pancreas, or cancer — with per-pixel confidence scores.
+                        </p>
+                    </div>
+                </div>
+
+                <div class="disclaimer">
+                    <div class="disclaimer__icon">⚠️</div>
+                    <div class="disclaimer__content">
+                        <h4 class="disclaimer__title">Research Demonstration Only</h4>
+                        <p class="disclaimer__text">
+                            This tool is a research proof-of-concept trained on the Medical Segmentation Decathlon (Task07_Pancreas) dataset.
+                            It is <strong>not</strong> a clinical diagnostic tool and has not undergone regulatory approval (FDA/CE).
+                            Do not use this for medical decision-making.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- ============================================================ -->
+    <!-- FOOTER -->
+    <!-- ============================================================ -->
+    <footer class="footer">
+        <div class="container">
+            <p class="footer__text">
+                PancreaScan &copy; 2026 &mdash; Two-Stage UNet Pipeline &middot; PyTorch &middot; Medical Segmentation Decathlon &middot; CC-BY-SA 4.0
+            </p>
+        </div>
+    </footer>
+
+    <script src="script.js"></script>
+</body>
+</html>

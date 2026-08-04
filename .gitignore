@@ -1,5 +1,6 @@
-# Data - never commit large datasets
+# Data — never commit large raw datasets
 data/processed/
+data/processed_cropped/
 data/*.nii.gz
 *.npy
 
@@ -15,6 +16,8 @@ __pycache__/
 .DS_Store
 Thumbs.db
 
-# Outputs (generated images/checkpoints - optional, up to you)
-outputs/*.png
+# Model weights and checkpoints (too large for git)
 *.pth
+
+# Generated output images (regenerated on demand)
+outputs/*.png
