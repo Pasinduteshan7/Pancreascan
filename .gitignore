@@ -1,7 +1,7 @@
-# Data — never commit large raw datasets
-data/processed/
-data/processed_cropped/
-data/*.nii.gz
+# Data — never commit large raw datasets or slices
+data/
+*.nii
+*.nii.gz
 *.npy
 
 # Python
