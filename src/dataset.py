@@ -1,4 +1,5 @@
 # src/dataset.py
+import os
 import json
 import numpy as np
 import torch
@@ -23,8 +24,19 @@ class PancreasDataset(Dataset):
     def __getitem__(self, idx):
         filename = self.filenames[idx]
 
-        image = np.load(f"{self.images_dir}/{filename}")
-        label = np.load(f"{self.labels_dir}/{filename}")
+        img_path = os.path.join(self.images_dir, filename)
+        lbl_path = os.path.join(self.labels_dir, filename)
+        if not os.path.exists(img_path):
+            alt_img = img_path.replace("data\\processed", "data\\panorama_processed").replace("data/processed", "data/panorama_processed")
+            if os.path.exists(alt_img):
+                img_path = alt_img
+        if not os.path.exists(lbl_path):
+            alt_lbl = lbl_path.replace("data\\processed", "data\\panorama_processed").replace("data/processed", "data/panorama_processed")
+            if os.path.exists(alt_lbl):
+                lbl_path = alt_lbl
+
+        image = np.load(img_path)
+        label = np.load(lbl_path)
 
         # Convert to tensors, add channel + batch dims temporarily for resizing
         image = torch.from_numpy(image).float().unsqueeze(0).unsqueeze(0)  # (1,1,H,W)
