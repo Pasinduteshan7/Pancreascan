@@ -21,8 +21,11 @@ from preprocessing import apply_window
 # -------------------------------------------------------------------------
 # Config
 # -------------------------------------------------------------------------
-STAGE1_MODEL_PATH = "../outputs/best_model_stage1.pth"
-STAGE2_MODEL_PATH = "../outputs/best_model_stage2.pth"
+SCRIPT_DIR  = os.path.dirname(os.path.abspath(__file__))
+PROJECT_DIR = os.path.abspath(os.path.join(SCRIPT_DIR, ".."))
+
+STAGE1_MODEL_PATH = os.path.join(PROJECT_DIR, "outputs", "best_model_stage1.pth")
+STAGE2_MODEL_PATH = os.path.join(PROJECT_DIR, "outputs", "best_model_stage2.pth")
 STAGE1_INPUT_SIZE = 256   # Stage 1 works on full slice resized to 256x256
 STAGE2_INPUT_SIZE = 128   # Stage 2 works on the zoomed crop resized to 128x128
 CROP_MARGIN = 20          # Extra pixels added around the Stage 1 bounding box
