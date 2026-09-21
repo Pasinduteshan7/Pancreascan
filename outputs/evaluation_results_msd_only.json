@@ -1,0 +1,95 @@
+{
+  "pipeline": "Two-Stage (Stage 1: localize, Stage 2: detect)",
+  "dataset": "Medical Segmentation Decathlon \u2014 Task07_Pancreas",
+  "split": "validation",
+  "num_slices": 1331,
+  "num_patients": 42,
+  "dice_per_slice": {
+    "background": {
+      "mean": 0.9931,
+      "std": 0.0042,
+      "n": 1331
+    },
+    "pancreas": {
+      "mean": 0.4342,
+      "std": 0.1995,
+      "n": 1331
+    },
+    "tumor": {
+      "mean": 0.2297,
+      "std": 0.386,
+      "n": 1331
+    }
+  },
+  "dice_per_patient": {
+    "background": {
+      "mean": 0.9931,
+      "std": 0.002,
+      "n_patients": 42
+    },
+    "pancreas": {
+      "mean": 0.4347,
+      "std": 0.0954,
+      "n_patients": 42
+    },
+    "tumor": {
+      "mean": 0.2271,
+      "std": 0.1531,
+      "n_patients": 42
+    }
+  },
+  "slice_tumor_detection": {
+    "true_positives": 317,
+    "true_negatives": 205,
+    "false_positives": 756,
+    "false_negatives": 53,
+    "sensitivity": 0.8568,
+    "specificity": 0.2133,
+    "accuracy": 0.3922
+  },
+  "confusion_matrix": {
+    "classes": [
+      "background",
+      "pancreas",
+      "tumor"
+    ],
+    "matrix": [
+      [
+        85474531,
+        950449,
+        200051
+      ],
+      [
+        21767,
+        453390,
+        35120
+      ],
+      [
+        12341,
+        23599,
+        57168
+      ]
+    ],
+    "note": "Subsampled (every 4th pixel) to manage memory"
+  },
+  "classification_report": {
+    "background": {
+      "precision": 0.9996,
+      "recall": 0.9867,
+      "f1": 0.9931,
+      "support": 86625031
+    },
+    "pancreas": {
+      "precision": 0.3176,
+      "recall": 0.8885,
+      "f1": 0.468,
+      "support": 510277
+    },
+    "tumor": {
+      "precision": 0.1956,
+      "recall": 0.614,
+      "f1": 0.2966,
+      "support": 93108
+    }
+  }
+}
